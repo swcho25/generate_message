@@ -165,3 +165,26 @@ textarea {
     background-color: #a9a9a9;  /* Hover 시 더 어두운 회색 */
     opacity: 1;  /* 버튼 hover 시 불투명도 유지 */
 }
+
+.added-keywords {
+    display: flex;
+    flex-wrap: wrap; /* 여러 줄에 걸쳐 키워드 표시 */
+    gap: 5px;
+    margin-top: 5px;
+}
+
+.keyword-box {
+    background-color: aliceblue;
+    border-radius: 12px;
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+}
+
+.remove-keyword {
+    margin-left: 8px;
+    cursor: pointer;
+    color: #a9a9a9;
+    font-weight: bold;
+}
