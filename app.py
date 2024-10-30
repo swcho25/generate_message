@@ -14,19 +14,10 @@ openai.api_key = ''
 HTML_FOLDER = os.path.join(os.getcwd(), 'static', 'html')
 STATIC_FOLDER = os.path.join(os.getcwd(), 'static')
 
-
-# 텍스트를 지정된 언어로 번역하는 함수
-def translate_text(text, target_language):
-    response = openai.ChatCompletion.create(
-        model="gpt-4-turbo",
-        messages=[{"role": "user", "content": f"Translate '{text}' to {target_language}. Just print out the results."}]
-    )
-    return response.choices[0].message['content'].strip()
-
-def translate_result_message(message, keyword, num_examples=3):
+def translate_result_message(message, keywords, num_examples=3):
     prompt = (
         f"Generate {num_examples} different message templates for '{message}'. output only results."
-        f"Include the keyword '{keyword}' where appropriate. "
+        f"Include the keywords '{keywords[0], keywords[1], keywords[2]}' where appropriate."
         f"Provide each example in the format '1. ...', '2. ...', '3. ...'."
     )
     response = openai.ChatCompletion.create(
@@ -44,12 +35,12 @@ def generate_text():
     try:
         data = request.json
         message = data.get('message', '제목 없음')
-        keyword = data.get('keyword', '내용 없음')
+        keywords = data.get('keywords', '내용 없음')
         
-        print(f"요청받은 데이터 - 제목: {message}, 키워드: {keyword}")  # 요청 데이터 로그 출력
+        print(f"요청받은 데이터 - 제목: {message}, 키워드: {keywords[0], keywords[1], keywords[2]}")  # 요청 데이터 로그 출력
         
         # 문자 생성 로직
-        result_message = translate_result_message(message, keyword)
+        result_message = translate_result_message(message, keywords)
         print(f"최종 생성 결과1: {result_message[0]}\n")  # 최종 결과를 터미널에 출력
         print(f"최종 생성 결과2: {result_message[1]}\n")  # 최종 결과를 터미널에 출력
         print(f"최종 생성 결과3: {result_message[2]}\n")  # 최종 결과를 터미널에 출력

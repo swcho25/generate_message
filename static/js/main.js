@@ -1,16 +1,13 @@
-
-// 기존 메시지 생성 폼 이벤트 리스너
 document.getElementById('messageForm').addEventListener('submit', async (event) => {
     event.preventDefault();
 
     const message = document.getElementById('message').value;
-    const keyword = document.getElementById('keyword').value;
 
     try {
         const response = await fetch('http://127.0.0.1:5000/generate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message, keyword }),
+            body: JSON.stringify({ message, keywords }),
         });
 
         const data = await response.json();
