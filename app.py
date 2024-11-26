@@ -18,6 +18,7 @@ def translate_result_message(message, keywords, num_examples=3):
     prompt = (
         f"Generate {num_examples} different message templates for '{message}'. output only results."
         f"Include the keywords '{keywords[0], keywords[1], keywords[2]}' where appropriate."
+        f"Each message should be at least 500 bytes in length."
         f"Provide each example in the format '1. ...', '2. ...', '3. ...'."
     )
     response = openai.ChatCompletion.create(
@@ -35,16 +36,23 @@ def generate_text():
     try:
         data = request.json
         message = data.get('message', '제목 없음')
-        keywords = data.get('keywords', '내용 없음')
+        keywords = data.get('keywords', [])
+
+        # 리스트 형태가 아닐 경우 기본값 설정
+        if not isinstance(keywords, list):
+            keywords = ['키워드 없음', '키워드 없음', '키워드 없음']
+        elif len(keywords) < 3:
+            keywords.extend(['키워드 없음'] * (3 - len(keywords)))
         
         print(f"요청받은 데이터 - 제목: {message}, 키워드: {keywords[0], keywords[1], keywords[2]}")  # 요청 데이터 로그 출력
         
         # 문자 생성 로직
         result_message = translate_result_message(message, keywords)
-        print(f"최종 생성 결과1: {result_message[0]}\n")  # 최종 결과를 터미널에 출력
-        print(f"최종 생성 결과2: {result_message[1]}\n")  # 최종 결과를 터미널에 출력
-        print(f"최종 생성 결과3: {result_message[2]}\n")  # 최종 결과를 터미널에 출력
-
+        
+        # 각 메시지와 바이트 크기를 로그에 출력
+        for i, msg in enumerate(result_message, start=1):
+            byte_size = len(msg.encode('utf-8'))  # UTF-8 기준 바이트 크기 계산
+            print(f"최종 생성 결과 {i}: {msg}\n크기: {byte_size} 바이트\n")
         # 생성된 메시지를 반환
         return jsonify({'result_message': result_message}), 200
 

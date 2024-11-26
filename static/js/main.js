@@ -11,6 +11,7 @@ document.getElementById('messageForm').addEventListener('submit', async (event) 
         });
 
         const data = await response.json();
+        console.log('Received data: ', data);
 
         if (response.ok) {
             const resultPlaceholder = document.querySelector('.result-placeholder');
