@@ -21,7 +21,7 @@ def translate_result_message(message, keywords):
         f"The message must contains exactly 7 sentences."
     )
     response = openai.ChatCompletion.create(
-        model="gpt-4-turbo",
+        model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": prompt}],
     )
     # 메시지 내용을 추출
