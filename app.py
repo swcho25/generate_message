@@ -14,23 +14,19 @@ openai.api_key = ''
 HTML_FOLDER = os.path.join(os.getcwd(), 'static', 'html')
 STATIC_FOLDER = os.path.join(os.getcwd(), 'static')
 
-def translate_result_message(message, keywords, num_examples=3):
+def translate_result_message(message, keywords):
     prompt = (
-        f"Generate {num_examples} different message templates for '{message}'. output only results."
-        f"Include the keywords '{keywords[0], keywords[1], keywords[2]}' where appropriate."
-        f"Each message should be at least 500 bytes in length."
-        f"Provide each example in the format '1. ...', '2. ...', '3. ...'."
+        f"Write a single message for '{message}'."
+        f"The message must use the keywords '{keywords[0]}', '{keywords[1]}', and '{keywords[2]}'. "
+        f"The message must contains exactly 7 sentences."
     )
     response = openai.ChatCompletion.create(
         model="gpt-4-turbo",
-        messages=[{"role": "user", "content": prompt}]
+        messages=[{"role": "user", "content": prompt}],
     )
-    result = response.choices[0].message['content'].strip()
-    # 정규식을 이용해 각 번호로 시작하는 부분을 기준으로 분리
-    examples = re.split(r'\n?\d+\.\s', result)[1:]  # 첫 번째 빈 문자열 제거
-    return examples  # 배열 반환
+    # 메시지 내용을 추출
+    return response['choices'][0]['message']['content'].strip()
 
-# 문자 자동 생성 API
 @app.route('/generate', methods=['POST'])
 def generate_text():
     try:
@@ -43,20 +39,22 @@ def generate_text():
             keywords = ['키워드 없음', '키워드 없음', '키워드 없음']
         elif len(keywords) < 3:
             keywords.extend(['키워드 없음'] * (3 - len(keywords)))
-        
-        print(f"요청받은 데이터 - 제목: {message}, 키워드: {keywords[0], keywords[1], keywords[2]}")  # 요청 데이터 로그 출력
-        
-        # 문자 생성 로직
+
+        print(f"요청받은 데이터 - 제목: {message}, 키워드: {keywords[0]}, {keywords[1]}, {keywords[2]}")
+
+        # 메시지 생성 로직
         result_message = translate_result_message(message, keywords)
-        
-        # 각 메시지와 바이트 크기를 로그에 출력
-        for i, msg in enumerate(result_message, start=1):
-            byte_size = len(msg.encode('utf-8'))  # UTF-8 기준 바이트 크기 계산
-            print(f"최종 생성 결과 {i}: {msg}\n크기: {byte_size} 바이트\n")
-        # 생성된 메시지를 반환
-        return jsonify({'result_message': result_message}), 200
+
+        # UTF-8 기준 바이트 크기 계산
+        byte_size = len(result_message.encode('utf-8'))
+        print(f"최종 생성 결과: {result_message}")
+        print(f"메시지 크기: {byte_size} 바이트")
+
+        return jsonify({'result_message': [result_message]}), 200
 
     except Exception as e:
+        # 예외 로그 출력
+        print(f"오류 발생: {e}")
         return jsonify({'error': str(e)}), 500
 
 

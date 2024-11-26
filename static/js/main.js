@@ -25,7 +25,7 @@ document.getElementById('messageForm').addEventListener('submit', async (event) 
                 messageBox.className = 'message-box';
 
                 messageBox.innerHTML = `
-                            <p><strong>예시 ${index + 1}:</strong></p>
+                            <p><strong>생성 결과</strong></p>
                             <p>${msg}</p>
                             <div class="button-group">
                                 <button class="btn-delete">삭제</button>
